@@ -16,6 +16,7 @@ use App\Models\Cart;
 use App\Models\Comment;
 use App\Models\Wishlist;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 
@@ -295,5 +296,16 @@ class PageController extends Controller
         $products =  Product::all();
         $pdf = PDF::loadView('PDF.exportProduct', compact('products'))->setPaper('a4', 'portrait');
         return $pdf->download('products.pdf');
+    }
+    public function getProductsByKeyword(Request $request)
+    {
+        if($request->keyword == null)
+        {
+            return DB::all();
+        }
+        $result = DB::table('products')
+                ->where('name', 'like', "%$request->keyword%")
+                ->get();
+        return $result;
     }
 }
